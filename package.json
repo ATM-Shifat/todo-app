@@ -1,0 +1,19 @@
+{
+  "name": "test-api",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node --watch  --env-file=.env ./src/server.js"
+  },
+  "keywords": [],
+  "author": "atm-shifat",
+  "license": "MIT",
+  "description": "A full stack applicatoin that uses a NodeJS backend, a SQLite database, and JWT authentication.",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
