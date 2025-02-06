@@ -18,3 +18,17 @@ Content-Type: application/json
     "username": "gillt@gmail.com",
     "password": "password"
 }
+
+### Fetch todo list GET /TODOS/
+GET http://localhost:3000/todos
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODYzMDMxLCJleHAiOjE3Mzg5NDk0MzF9.78QtC2sj787-GNlqmW_q9RlOyVcpOXC6Rlym91jwBGU
+
+### Add todo list POST /TODOS/
+POST http://localhost:3000/todos/
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4ODYzMDMxLCJleHAiOjE3Mzg5NDk0MzF9.78QtC2sj787-GNlqmW_q9RlOyVcpOXC6Rlym91jwBGU
+
+{
+    "task" : "Don't do this task"
+}
