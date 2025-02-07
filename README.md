@@ -7,10 +7,14 @@
 
 ## Getting Started with Docker Container
 
-1. **Generate the Prisma Client**: `npx prisma generate`
+1. **Generate the Prisma Client**: 
+    `npx prisma generate`
 
-2. **Build your docker images**: docker compose build`
+2. **Build your docker images**: `
+    `docker compose build`
 
-3. **Create PostgreSQL migrations and apply them**: `docker compose run app npx prisma migrate dev --name init`
+3. **Create PostgreSQL migrations and apply them**: 
+    `docker compose run app npx prisma migrate dev --name init`
 
-4. **Boot up 2x docker containers**: `docker compose --env-file .env up`
+4. **Boot up 2x docker containers**: 
+    `docker compose --env-file .env up`
