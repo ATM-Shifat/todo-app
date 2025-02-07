@@ -10,7 +10,7 @@
 1. **Generate the Prisma Client**: 
     `npx prisma generate`
 
-2. **Build your docker images**: `
+2. **Build your docker images**: 
     `docker compose build`
 
 3. **Create PostgreSQL migrations and apply them**: 
