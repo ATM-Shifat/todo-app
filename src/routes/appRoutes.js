@@ -16,8 +16,6 @@ router.get("/", async (req, res) => {
         }
     })
 
-    if(!todos) return res.status(404).json({message: "Not Found"})
-
     res.status(200).json(todos)
 })
 
@@ -55,7 +53,6 @@ router.put("/:id", async (req, res) => {
     //Checking provided information
     if(!task ||!completed) return res.status(400).send("Missing task or completed information!")
 
-
     try{
         const updatedTodo = await prisma.todo.update({
             where: {
@@ -67,14 +64,16 @@ router.put("/:id", async (req, res) => {
                 completed: !!completed,
             }
         })
-
-        if(!updatedTodo) return res.status(404).json({message: "Not Found"})
         
         res.status(200).json({updatedTodo, message: "Task updated successfully"})
 
     }catch(error){
+
+        // Prisma error code for "Record not found"
+        if(error.code === 'P2025') return res.status(404).json({message: "Task not found!"})
+
         console.error(error.message)
-        return res.status(500).json({message: "Server Error"})
+        return res.status(500).json({message: "Server error"})
     }
 }) 
 
@@ -90,13 +89,15 @@ router.delete("/:id", async (req, res) => {
             }
         })
 
-        //if(deleteTodo) return res.status(404).json({message: "Not Found"})
-
         res.status(200).json({message: "Task deleted successfully"})
 
     }catch(error){
+
+        // Prisma error code for "Record not found"
+        if(error.code === 'P2025') return res.status(404).json({message: "Task not found!"})
+
         console.error(error.message)
-        return res.status(500).json({message: "Server Error"})
+        return res.status(500).json({message: "Server error"})
     }
 })
 

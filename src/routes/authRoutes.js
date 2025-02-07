@@ -14,9 +14,12 @@ router.post("/register", async(req, res) => {
     if(!username ||!password) return res.status(400).send("Username and password are required")
 
     //check if user exists
-    // const getUser = db.prepare("SELECT COUNT(*) as count FROM USERS WHERE username = ?")
-    // const user = getUser.get(username)
-    // if(user.count > 0) return res.status(400).send({ message:"Username already exists"})
+    const user = await prisma.user.findUnique({
+        where: {
+            username: username
+        }
+    })
+    if(user) return res.status(409).send({message: "User already exists!"})
 
     const hashedPassword = bcrypt.hashSync(password, salt)
 
@@ -51,7 +54,7 @@ router.post("/register", async(req, res) => {
 
     }catch(error){
         console.error(error.message)
-        return res.sendStatus(503)
+        return res.status(500).json({message: "Server error"})
     }
 
 })
@@ -71,8 +74,6 @@ router.post("/login", async (req, res) => {
             }
         })
         if(!user) return res.status(404).send({message: "User not found!"})
-
-        console.log(user)
         
         //Check password
         const validPassword = bcrypt.compareSync(password, user?.password)
@@ -88,7 +89,7 @@ router.post("/login", async (req, res) => {
 
     }catch(error){
         console.error(error.message)
-        return res.sendStatus(503)
+        return res.status(500).json({message: "Server error"})
     }
 })
 
