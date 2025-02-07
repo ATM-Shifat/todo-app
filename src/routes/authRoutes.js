@@ -1,38 +1,48 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import db from '../db.js';
+import prisma from '../prismaClient.js';
 
 const router = express.Router()
 const salt = Number(process.env.SALT)
 
 //Register Users
-router.post("/register", (req, res) => {
+router.post("/register", async(req, res) => {
     const {username, password} = req.body
 
+    //Checking provided information
     if(!username ||!password) return res.status(400).send("Username and password are required")
 
     //check if user exists
-    const getUser = db.prepare("SELECT COUNT(*) as count FROM USERS WHERE username = ?")
-    const user = getUser.get(username)
-    if(user.count > 0) return res.status(400).send({ message:"Username already exists"})
+    // const getUser = db.prepare("SELECT COUNT(*) as count FROM USERS WHERE username = ?")
+    // const user = getUser.get(username)
+    // if(user.count > 0) return res.status(400).send({ message:"Username already exists"})
 
     const hashedPassword = bcrypt.hashSync(password, salt)
 
     try{
 
         //create user
-        const insertUser = db.prepare(`INSERT INTO USERS (username, password) VALUES (?, ?)`)
-        const result = insertUser.run(username, hashedPassword)
+        const user = await prisma.user.create({
+            data: {
+                username,
+                password: hashedPassword,
+            },
+        })
 
         const defaultTodo = `Hello :) first todo`
 
-        //create default task
-        const insertTodo = db.prepare(`INSERT INTO TODOS (user_id, task) VALUES (?, ?)`)
-        insertTodo.run(result.lastInsertRowid, defaultTodo)
-
+        //Insert default task
+        await prisma.todo.create({
+            data: {
+                userId: user.id,
+                task: defaultTodo,
+            }
+        })
+        
+        //Generation of JWT token
         const token = jwt.sign(
-            {id: result.lastInsertRowid}, 
+            {id: user.id}, 
             process.env.JWT_SECRET, 
             {expiresIn: "24h"}
         )
@@ -46,18 +56,23 @@ router.post("/register", (req, res) => {
 
 })
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
     const {username, password} = req.body
 
+    //Checking provided information
+    if(!username ||!password) return res.status(400).send("Username and password are required")
+
     try{
+
         //Check if the user exists
-        //const getUser = db.prepare("SELECT EXISTS (SELECT 1 FROM USERS WHERE username = ?) AS userCount")
-        //const getUser = db.prepare(`SELECT COUNT(*) AS count FROM USERS WHERE username = ?`)
-        //const getUser = db.prepare("SELECT id password FROM USERS WHERE username = ?")
- 
-        const getUser = db.prepare(`SELECT id, password FROM USERS WHERE username = ?`) 
-        const user = getUser.get(username)
+        const user = await prisma.user.findUnique({
+            where: {
+                username: username
+            }
+        })
         if(!user) return res.status(404).send({message: "User not found!"})
+
+        console.log(user)
         
         //Check password
         const validPassword = bcrypt.compareSync(password, user?.password)
